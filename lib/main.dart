@@ -1,4 +1,4 @@
-import 'dart:html';
+import 'dart:developer' as devtools show log;
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -46,7 +46,6 @@ class homepage extends StatelessWidget {
           //   print('email verified');
           //   return const Text('done');
           // } else {
-            
 
           // }
           // return const login_view();
@@ -58,7 +57,9 @@ class homepage extends StatelessWidget {
     );
   }
 }
-enum MenuAction{logout}
+
+enum MenuAction { logout }
+
 class notesview extends StatefulWidget {
   const notesview({Key? key}) : super(key: key);
 
@@ -72,8 +73,60 @@ class _notesviewState extends State<notesview> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Main UI'),
+        actions: [
+          PopupMenuButton<MenuAction>(
+            onSelected: (value) async {
+              switch (value) {
+                case MenuAction.logout:
+                  // TODO: Handle this case.
+                  final a = await showlogoutdilog(context);
+                  if (a) {
+                    await FirebaseAuth.instance.signOut();
+                    Navigator.of(context)
+                        .pushNamedAndRemoveUntil('login', (route) => false);
+                  }
+
+                  break;
+              }
+            },
+            itemBuilder: (context) {
+              return const [
+                PopupMenuItem<MenuAction>(
+                  value: MenuAction.logout,
+                  child: Text('Log Out'),
+                )
+              ];
+            },
+          )
+        ],
       ),
       body: Text('done'),
     );
   }
+}
+
+Future<bool> showlogoutdilog(BuildContext context) {
+  return showDialog<bool>(
+    context: context,
+    builder: (context) {
+      return AlertDialog(
+        title: const Text('Sign Out'),
+        content: const Text('Are you sure you want to log out?'),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop(false);
+            },
+            child: Text('cancel'),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop(true);
+            },
+            child: Text('log out'),
+          )
+        ],
+      );
+    },
+  ).then((value) => value ?? false);
 }
