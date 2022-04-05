@@ -13,7 +13,8 @@ void main() {
   runApp(
     MaterialApp(home: homepage(), routes: {
       'login': (context) => const login_view(),
-      'register': (context) => const register_view()
+      'register': (context) => const register_view(),
+      'notes': (context) => const notesview()
     }),
   );
 }
@@ -34,7 +35,7 @@ class homepage extends StatelessWidget {
             final user = FirebaseAuth.instance.currentUser;
             if (user != null) {
               if (user.emailVerified) {
-                print('email verified');
+                devtools.log('email verified');
               } else {
                 return const verifyemailview();
               }
@@ -42,14 +43,6 @@ class homepage extends StatelessWidget {
               return const login_view();
             }
             return const notesview();
-          // if (user?.emailVerified ?? false) {
-          //   print('email verified');
-          //   return const Text('done');
-          // } else {
-
-          // }
-          // return const login_view();
-
           default:
             return const CircularProgressIndicator();
         }
