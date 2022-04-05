@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:mynotes/constants/routes.dart';
 import 'package:mynotes/firebase_options.dart';
 import 'package:mynotes/utilities/show_error_dialog.dart';
+import 'package:mynotes/views/verify_email_view.dart';
 
 class login_view extends StatefulWidget {
   const login_view({Key? key}) : super(key: key);
@@ -62,10 +63,18 @@ class _login_viewState extends State<login_view> {
               try {
                 await FirebaseAuth.instance.signInWithEmailAndPassword(
                     email: email, password: password);
-                Navigator.of(context).pushNamedAndRemoveUntil(
-                  notesroute,
-                  (route) => false,
-                );
+                final user = FirebaseAuth.instance.currentUser;
+                if (user?.emailVerified ?? false) {
+                  Navigator.of(context).pushNamedAndRemoveUntil(
+                    notesroute,
+                    (route) => false,
+                  );
+                } else {
+                  Navigator.of(context).pushNamedAndRemoveUntil(
+                    verifyemailviewroute,
+                    (route) => false,
+                  );
+                }
               } on FirebaseAuthException catch (e) {
                 if (e.code == 'wrong-password') {
                   showerrordialog(
