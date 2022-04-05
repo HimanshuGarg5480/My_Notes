@@ -15,7 +15,8 @@ void main() {
     MaterialApp(home: homepage(), routes: {
       loginroute: (context) => const login_view(),
       registerroute: (context) => const register_view(),
-      notesroute: (context) => const notesview()
+      notesroute: (context) => const notesview(),
+      verifyemailviewroute: (context) => const verifyemailview(),
     }),
   );
 }

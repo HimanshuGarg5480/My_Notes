@@ -1,10 +1,9 @@
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
-import 'dart:developer' as devtools show log;
 
 import 'package:flutter/material.dart';
 import 'package:mynotes/constants/routes.dart';
 import 'package:mynotes/firebase_options.dart';
+import 'package:mynotes/utilities/show_error_dialog.dart';
 
 class register_view extends StatefulWidget {
   const register_view({Key? key}) : super(key: key);
@@ -59,19 +58,32 @@ class _register_viewState extends State<register_view> {
               final email = _email.text;
               final password = _password.text;
               try {
-                final UserCredential = await FirebaseAuth.instance
-                    .createUserWithEmailAndPassword(
-                        email: email, password: password);
-                devtools.log(UserCredential.toString());
+                await FirebaseAuth.instance.createUserWithEmailAndPassword(
+                    email: email, password: password);
+                final user = FirebaseAuth.instance.currentUser;
+                user?.sendEmailVerification();
+                Navigator.of(context).pushNamed(verifyemailviewroute);
               } on FirebaseAuthException catch (e) {
                 if (e.code == 'weak-password') {
-                  devtools.log('Weak Password');
+                  showerrordialog(
+                    context,
+                    'Weak Password',
+                  );
                 } else if (e.code == 'invalid-email') {
-                  devtools.log('Invalid Email');
+                  showerrordialog(
+                    context,
+                    'Invalid Email',
+                  );
                 } else if (e.code == 'email-already-in-use') {
-                  devtools.log('Email Already in use');
+                  showerrordialog(
+                    context,
+                    'Email Already In Use',
+                  );
                 } else {
-                  devtools.log(e.toString());
+                  showerrordialog(
+                    context,
+                    'Error: ${e.code}',
+                  );
                 }
               }
             },
